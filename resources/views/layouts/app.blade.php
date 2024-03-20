@@ -76,5 +76,14 @@
             @yield('content')
         </main>
     </div>
+    <style>
+        .card-body {
+        height: 325px;
+        background-color: #cdd49f
+        }
+        .card-header {
+  background-color: #b2bf57;
+}
+    </style>
 </body>
 </html>
