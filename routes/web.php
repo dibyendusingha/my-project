@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\admincontroller;
+use App\Http\Controllers\LoginController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,16 +14,16 @@ use App\Http\Controllers\admin\admincontroller;
 |
 */
 
-Route::get('/', function () {
-    return view('auth.login');
-});
-
 Auth::routes();
+
+Route::get('/', [LoginController::class,'login_page'])->name('admin-page');
+Route::post('/user-reg', [LoginController::class,'save_reg']);
+Route::post('/user-login', [LoginController::class,'save_login']);
 
 
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('admin')->group(function () {
     Route::get('/home', [admincontroller::class,'index_page'])->name('home');
     Route::get('/form', [admincontroller::class,'form_page']);
     Route::get('/edit-user/{user_id}', [admincontroller::class,'edit_page']);

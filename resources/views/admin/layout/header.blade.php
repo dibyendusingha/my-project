@@ -1,6 +1,7 @@
 <?php 
 use Illuminate\Support\Facades\Auth;
-$user_name = Auth::user()->name;
+//$user_name = "hi";//admin()->user()->name; 
+ $user_name = session()->get('admin-session-data');
 
 ?>
 
