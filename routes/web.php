@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\admincontroller;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PaymentController;
+//use App\Http\Controllers\RazorpayPaymentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -30,6 +32,12 @@ Route::middleware('admin')->group(function () {
     Route::post('/add-user', [admincontroller::class,'add_user']);
     Route::get('/delete-user/{user_id}', [admincontroller::class,'delete_user_list']);
     Route::post('/update-user/{user_id}', [admincontroller::class,'update_user']);   
+
+     Route::get('/payment-page', [PaymentController::class,'payment_page']);
+    // Route::post('/add-payment', [PaymentController::class,'add_payment']);
+
+    //Route::get('product',[PaymentController::class,'index']);
+    Route::post('razorpay-payment',[PaymentController::class,'store'])->name('razorpay.payment.store');
 });
 
 

@@ -31,8 +31,12 @@ use Illuminate\Support\Facades\Auth;
     <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
     <scripy type="javascript" src="https://cdn.datatables.net/2.0.2/js/dataTables.min.js"></scripy>
 
+    <!-- Toster -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- Add SweetAlert library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -73,6 +77,14 @@ use Illuminate\Support\Facades\Auth;
                             <i class="mdi mdi-speedometer"></i>
                         </span>
                         <span class="menu-title">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="/payment-page">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-file-document-box"></i>
+                        </span>
+                        <span class="menu-title">Payment</span>
                     </a>
                 </li>
             </ul>
@@ -331,6 +343,75 @@ use Illuminate\Support\Facades\Auth;
                 rows[i].style.display = shouldDisplay ? "" : "none";
             }
         }
+    </script>
+
+    <!-- Payment Transaction -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+
+    function payWithRazorpay() {
+        var amount = document.getElementById('payment_amount').value;
+        console.log(amount);
+
+        var options = {
+            key: "{{ env('RAZORPAY_KEY') }}",
+            amount: amount*100,
+            currency: "INR",
+            name: "dibyendu.info",
+            description: "Razorpay payment",
+            image: "/images/logo-icon.png",
+            prefill: {
+                name: "Dibyendu",
+                email: "dibyendu@info.in"
+            },
+            theme: {
+                color: "#ff7529"
+            },
+            handler: function(response) {
+                toastr.success('Payment Successful!');
+                Swal.fire({
+                    icon: 'success',
+                    text: 'Thank you for your purchase.',
+                    showConfirmButton: false,
+                    timer: 4000 // Auto close timer in milliseconds
+                });
+               
+                document.getElementById('payment_amount').value = "";
+
+                // Handle successful payment response
+                var razorpay_payment_id = response.razorpay_payment_id;
+              
+                console.log(response.razorpay_payment_id);
+
+                // Send payment data to server for storing in table
+                storePaymentData(amount,razorpay_payment_id);
+            }
+        };
+        var rzp = new Razorpay(options);
+        rzp.open();
+    }
+
+    function storePaymentData(amount,razorpay_payment_id) {
+        var formData = new FormData();
+        formData.append('amount', amount);
+        formData.append('razorpay_payment_id', razorpay_payment_id);
+
+        fetch('{{ route("razorpay.payment.store") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            // Handle response from server if needed
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
     </script>
 </body>
 
